@@ -5,8 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediaTagger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Media Tagger" Height="450" Width="800">
     <Grid>
-        
+        <Menu>
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open MP3" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}"/>
+                <MenuItem Header="_Tag Current MP3" InputGestureText="Ctrl+T" Command="{Binding EditTagCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+            </MenuItem>
+            <MenuItem Header="_Media">
+                <MenuItem Header="_Play" Command="{Binding PlayCommand}"/>
+                <MenuItem Header="_Pause" Command="{Binding PauseCommand}"/>
+                <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
