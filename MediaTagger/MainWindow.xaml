@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MediaTagger"
+        
         mc:Ignorable="d"
         Title="Media Tagger" Height="450" Width="800">
     <Window.Resources>
+        //https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.booleantovisibilityconverter?view=windowsdesktop-8.0
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style x:Key="ToolBarButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Width" Value="50"/>
@@ -14,6 +16,24 @@
             <Setter Property="Margin" Value="5"/>
         </Style>
     </Window.Resources>
+    
+    <Window.CommandBindings>
+        <CommandBinding Command="local:MediaCommands.Play" 
+                    CanExecute="Play_CanExecute" 
+                    Executed="Play_Executed"/>
+        <CommandBinding Command="local:MediaCommands.Pause" 
+                    CanExecute="Pause_CanExecute" 
+                    Executed="Pause_Executed"/>
+        <CommandBinding Command="local:MediaCommands.Stop" 
+                    CanExecute="Stop_CanExecute" 
+                    Executed="Stop_Executed"/>
+        <CommandBinding Command="local:MediaCommands.Edit" 
+                    CanExecute="Edit_CanExecute" 
+                    Executed="Edit_Executed"/>
+        <CommandBinding Command="local:MediaCommands.Open" 
+                    CanExecute="Open_CanExecute" 
+                    Executed="Open_Executed"/>
+    </Window.CommandBindings>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -23,33 +43,33 @@
         <Menu Grid.Column="1">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open MP3" Click="OpenFile_Click"/>
-                <MenuItem Header="_Tag Current MP3" Click="EditTag_Click"/>
+                <MenuItem Header="_Tag Current MP3" Command="local:MediaCommands.Edit"/>
                 <Separator/>
                 <MenuItem Header="E_xit" Click="ExitApplication_Click"/>
             </MenuItem>
             <MenuItem Header="_Edit">
-                <MenuItem Header="_Edit Tags" Click="EditTag_Click"/>
+                <MenuItem Header="_Edit Tags" Command="local:MediaCommands.Edit"/>
             </MenuItem>
             <MenuItem Header="_Media">
-                <MenuItem Header="_Play" Click="PlayMedia_Click"/>
-                <MenuItem Header="_Pause" Click="PauseMedia_Click"/>
-                <MenuItem Header="_Stop" Click="StopMedia_Click"/>
+                <MenuItem Header="_Play" Command="local:MediaCommands.Play"/>
+                <MenuItem Header="_Pause" Command="local:MediaCommands.Pause"/>
+                <MenuItem Header="_Stop" Command="local:MediaCommands.Stop"/>
             </MenuItem>
         </Menu>
         <StackPanel Grid.Column="0" Orientation="Vertical">
-            <Button Click="OpenFile_Click" Style="{StaticResource ToolBarButtonStyle}">
+            <Button Command="local:MediaCommands.Open" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="open_file.png"/>
             </Button>
-            <Button Click="EditTag_Click" Style="{StaticResource ToolBarButtonStyle}">
+            <Button Command="local:MediaCommands.Edit" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="edit.png"/>
             </Button>
-            <Button Click="PlayMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+            <Button Command="local:MediaCommands.Play" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="media-play.png"/>
             </Button>
-            <Button Click="PauseMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+            <Button Command="local:MediaCommands.Pause" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="pause-icon.png"/>
             </Button>
-            <Button Click="StopMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+            <Button Command="local:MediaCommands.Stop" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="stop-icon.png"/>
             </Button>
         </StackPanel>
