@@ -6,21 +6,68 @@
         xmlns:local="clr-namespace:MediaTagger"
         mc:Ignorable="d"
         Title="Media Tagger" Height="450" Width="800">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <Style x:Key="ToolBarButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        <Menu>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Column="1">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open MP3" InputGestureText="Ctrl+O" Command="{Binding OpenCommand}"/>
-                <MenuItem Header="_Tag Current MP3" InputGestureText="Ctrl+T" Command="{Binding EditTagCommand}"/>
+                <MenuItem Header="_Open MP3" Click="OpenFile_Click"/>
+                <MenuItem Header="_Tag Current MP3" Click="EditTag_Click"/>
                 <Separator/>
-                <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+                <MenuItem Header="E_xit" Click="ExitApplication_Click"/>
             </MenuItem>
             <MenuItem Header="_Edit">
+                <MenuItem Header="_Edit Tags" Click="EditTag_Click"/>
             </MenuItem>
             <MenuItem Header="_Media">
-                <MenuItem Header="_Play" Command="{Binding PlayCommand}"/>
-                <MenuItem Header="_Pause" Command="{Binding PauseCommand}"/>
-                <MenuItem Header="_Stop" Command="{Binding StopCommand}"/>
+                <MenuItem Header="_Play" Click="PlayMedia_Click"/>
+                <MenuItem Header="_Pause" Click="PauseMedia_Click"/>
+                <MenuItem Header="_Stop" Click="StopMedia_Click"/>
             </MenuItem>
         </Menu>
+        <StackPanel Grid.Column="0" Orientation="Vertical">
+            <Button Click="OpenFile_Click" Style="{StaticResource ToolBarButtonStyle}">
+                <Image Source="open_file.png"/>
+            </Button>
+            <Button Click="EditTag_Click" Style="{StaticResource ToolBarButtonStyle}">
+                <Image Source="edit.png"/>
+            </Button>
+            <Button Click="PlayMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+                <Image Source="media-play.png"/>
+            </Button>
+            <Button Click="PauseMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+                <Image Source="pause-icon.png"/>
+            </Button>
+            <Button Click="StopMedia_Click" Style="{StaticResource ToolBarButtonStyle}">
+                <Image Source="stop-icon.png"/>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1">
+            <Image Height="200" Margin="10" x:Name="artworkImage"/>
+            <Label Background="#AAFFFFFF" Margin="10" x:Name="titleLabel"/>
+            <Label Background="#AAFFFFFF" Margin="10" x:Name="artistLabel"/>
+            <Label Background="#AAFFFFFF" Margin="10" x:Name="albumLabel"/>
+        </StackPanel>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#AA000000" x:Name="editTagsOverlay">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Background="#FFFFFFFF">
+                <TextBox Margin="5" x:Name="titleTextBox"/>
+                <TextBox Margin="5" x:Name="artistTextBox"/>
+                <TextBox Margin="5" x:Name="albumTextBox"/>
+                <Button Content="Save" Click="SaveTagChanges_Click" Margin="5"/>
+                <Button Content="Cancel" Click="CloseEditOverlay_Click" Margin="5"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

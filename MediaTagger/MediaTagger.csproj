@@ -72,6 +72,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MediaFileInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -97,6 +98,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="edit.png" />
+    <Resource Include="media-play.png" />
+    <Resource Include="musicnote.png" />
+    <Resource Include="open_file.png" />
+    <Resource Include="pause-icon.png" />
+    <Resource Include="stop-icon.png" />
+    <Resource Include="textured.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
