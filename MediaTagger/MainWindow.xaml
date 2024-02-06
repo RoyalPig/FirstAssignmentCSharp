@@ -8,7 +8,6 @@
         mc:Ignorable="d"
         Title="Media Tagger" Height="450" Width="800">
     <Window.Resources>
-        //https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.booleantovisibilityconverter?view=windowsdesktop-8.0
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style x:Key="ToolBarButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Width" Value="50"/>
@@ -79,13 +78,16 @@
             <Label Background="#AAFFFFFF" Margin="10" x:Name="titleLabel"/>
             <Label Background="#AAFFFFFF" Margin="10" x:Name="artistLabel"/>
             <Label Background="#AAFFFFFF" Margin="10" x:Name="albumLabel"/>
+            <ProgressBar x:Name="mediaPlaybackProgress" Height="20" Margin="10" Maximum="100"/>
+
         </StackPanel>
+        
         <Grid Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#AA000000" x:Name="editTagsOverlay">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Background="#FFFFFFFF">
                 <TextBox Margin="5" x:Name="titleTextBox"/>
                 <TextBox Margin="5" x:Name="artistTextBox"/>
                 <TextBox Margin="5" x:Name="albumTextBox"/>
-                <Button Content="Save" Click="SaveTagChanges_Click" Margin="5"/>
+                <Button x:Name="saveTagChangesButton" Content="Save" Click="SaveTagChanges_Click" Margin="5"/>
                 <Button Content="Cancel" Click="CloseEditOverlay_Click" Margin="5"/>
             </StackPanel>
         </Grid>

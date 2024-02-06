@@ -7,6 +7,8 @@ using System.IO;
 using System.Windows.Media;
 using TagLib;
 using System.Windows.Input;
+using System.Windows.Threading;
+using System.Threading; // For DispatcherTimer
 
 namespace MediaTagger
 
@@ -25,10 +27,13 @@ namespace MediaTagger
 
         private MediaPlayer mediaPlayer = new MediaPlayer();
         private MediaFileInfo currentMediaFile;
+        private DispatcherTimer mediaProgressTimer;
+        private bool isMediaPlaying = false;
 
         public MainWindow()
         {
             InitializeComponent();
+            InitializeMediaProgressTimer();
         }
 
         private void UpdateUIWithMediaInfo()
@@ -38,8 +43,40 @@ namespace MediaTagger
             albumLabel.Content = currentMediaFile.Album;
             artworkImage.Source = currentMediaFile.Artwork;
         }
+        //https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.progressbar?view=windowsdesktop-8.0#examples
+        private void InitializeMediaProgressTimer()
+        {
+            mediaProgressTimer = new DispatcherTimer();
+            mediaProgressTimer.Interval = TimeSpan.FromMilliseconds(500); // Update every half second
+            mediaProgressTimer.Tick += MediaProgressTimer_Tick;
+        }
+        private void MediaProgressTimer_Tick(object sender, EventArgs e)
+        {
+            if (mediaPlayer.NaturalDuration.HasTimeSpan && mediaPlayer.NaturalDuration.TimeSpan.TotalSeconds > 0)
+            {
+                mediaPlaybackProgress.Value = (mediaPlayer.Position.TotalSeconds / mediaPlayer.NaturalDuration.TimeSpan.TotalSeconds) * 100;
+            }
+        }
 
-        //All the command bindings from the ui
+        private void MediaPlayer_MediaOpened(object sender, EventArgs e)
+        {
+            mediaProgressTimer.Start();
+        }
+        private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            mediaPlayer.Pause();
+            mediaProgressTimer.Stop(); 
+            isMediaPlaying = false;
+        }
+
+        private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            mediaPlayer.Stop();
+            mediaProgressTimer.Stop(); 
+            mediaPlaybackProgress.Value = 0;
+            isMediaPlaying = false;
+        }
+
         private void Edit_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenEditOverlay();
@@ -62,34 +99,26 @@ namespace MediaTagger
         private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             mediaPlayer.Play();
+            isMediaPlaying = true;
+            mediaProgressTimer.Start();
+
         }
 
         private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = currentMediaFile != null;
-        }
-
-        private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            mediaPlayer.Pause();
+            e.CanExecute = currentMediaFile != null && !isMediaPlaying;
         }
 
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = mediaPlayer.CanPause; // Example logic to enable/disable
-        }
-
-        private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            mediaPlayer.Stop();
+            e.CanExecute = isMediaPlaying;
         }
 
         private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = mediaPlayer.Source != null; // Example logic to enable/disable
+            e.CanExecute = mediaPlayer.Position > TimeSpan.Zero;
         }
 
-        //Used clicks to start, kept a couple for the buttons that dont need command binding extras 
         private void CloseEditOverlay_Click(object sender, RoutedEventArgs e)
         {
             CloseEditOverlay();
@@ -104,6 +133,13 @@ namespace MediaTagger
             titleTextBox.Text = currentMediaFile.Title;
             artistTextBox.Text = currentMediaFile.Artist;
             albumTextBox.Text = currentMediaFile.Album;
+            if (isMediaPlaying == true)
+            {
+                saveTagChangesButton.Content = "Save (Will restart current song)";
+            } else
+            {
+                saveTagChangesButton.Content = "Save";
+            }
 
             editTagsOverlay.Visibility = Visibility.Visible;
         }
@@ -124,6 +160,8 @@ namespace MediaTagger
 
             if (openFileDialog.ShowDialog() == true)
             {
+                mediaPlayer.MediaOpened += MediaPlayer_MediaOpened; 
+
                 mediaPlayer.Open(new Uri(openFileDialog.FileName));
                 currentMediaFile = new MediaFileInfo(openFileDialog.FileName);
                 UpdateUIWithMediaInfo();
@@ -141,8 +179,14 @@ namespace MediaTagger
 
             try
             {
-                mediaPlayer.Close();
+                if (isMediaPlaying)
+                {
+                    mediaPlayer.Stop();
+                    isMediaPlaying = false;
+                }
 
+                mediaPlayer.Close();
+                Thread.Sleep(50);// my assumption is that if it happens too fast it still doesnt wanna save and because it was open 0.0000001 seconds ago
                 var file = TagLib.File.Create(currentMediaFile.FilePath);
                 file.Tag.Title = titleTextBox.Text;
                 file.Tag.Album = albumTextBox.Text;
