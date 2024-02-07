@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,14 +15,16 @@ namespace MediaTagger
         public string Title { get; private set; }
         public string Artist { get; private set; }
         public string Album { get; private set; }
+        public uint Year { get; private set; }
         public ImageSource Artwork { get; private set; }
 
+        // Public function to get the tags and pass them along
         public MediaFileInfo(string filePath)
         {
             FilePath = filePath;
             LoadTags();
         }
-
+        // Private functions logic for the public properties in the MediaFileInfo class
         private void LoadTags()
         {
             try
@@ -30,6 +33,7 @@ namespace MediaTagger
                 Title = file.Tag.Title;
                 Artist = string.Join(", ", file.Tag.Performers);
                 Album = file.Tag.Album;
+                Year = file.Tag.Year;
 
                 if (file.Tag.Pictures.Length > 0)
                 {

@@ -15,6 +15,7 @@ namespace MediaTagger
 {
     public static class MediaCommands
     {
+        //The routed command from the xaml
         public static readonly RoutedUICommand Play = new RoutedUICommand("Play", "Play", typeof(MediaCommands));
         public static readonly RoutedUICommand Pause = new RoutedUICommand("Pause", "Pause", typeof(MediaCommands));
         public static readonly RoutedUICommand Stop = new RoutedUICommand("Stop", "Stop", typeof(MediaCommands));
@@ -35,21 +36,23 @@ namespace MediaTagger
             InitializeComponent();
             InitializeMediaProgressTimer();
         }
-
+        //update main page with the info 
         private void UpdateUIWithMediaInfo()
         {
             titleLabel.Content = currentMediaFile.Title;
             artistLabel.Content = currentMediaFile.Artist;
             albumLabel.Content = currentMediaFile.Album;
             artworkImage.Source = currentMediaFile.Artwork;
+            yearLabel.Content = currentMediaFile.Year;
         }
-        //https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.progressbar?view=windowsdesktop-8.0#examples
+        // https://learn.microsoft.com/en-us/dotnet/api/system.windows.controls.progressbar?view=windowsdesktop-8.0#examples
         private void InitializeMediaProgressTimer()
         {
             mediaProgressTimer = new DispatcherTimer();
             mediaProgressTimer.Interval = TimeSpan.FromMilliseconds(500); // Update every half second
             mediaProgressTimer.Tick += MediaProgressTimer_Tick;
         }
+        
         private void MediaProgressTimer_Tick(object sender, EventArgs e)
         {
             if (mediaPlayer.NaturalDuration.HasTimeSpan && mediaPlayer.NaturalDuration.TimeSpan.TotalSeconds > 0)
@@ -128,11 +131,14 @@ namespace MediaTagger
             OpenFile(sender, e);
         }
 
+        // Populates the data in the overlay then makes the edttTagsOverlay visable 
         private void OpenEditOverlay()
         {
             titleTextBox.Text = currentMediaFile.Title;
             artistTextBox.Text = currentMediaFile.Artist;
             albumTextBox.Text = currentMediaFile.Album;
+            yearTextBox.Text = currentMediaFile.Year.ToString();
+            // A little 'woah bud you cant modify tags and then its playing'
             if (isMediaPlaying == true)
             {
                 saveTagChangesButton.Content = "Save (Will restart current song)";
@@ -149,7 +155,7 @@ namespace MediaTagger
             editTagsOverlay.Visibility = Visibility.Collapsed;
         }
 
-        //
+        //Open files, filter only mp3's then use the filename to get info 
         private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -191,6 +197,7 @@ namespace MediaTagger
                 file.Tag.Title = titleTextBox.Text;
                 file.Tag.Album = albumTextBox.Text;
                 file.Tag.Performers = new[] { artistTextBox.Text };
+                file.Tag.Year = uint.Parse(yearTextBox.Text);
                 file.Save();
 
                 currentMediaFile = new MediaFileInfo(currentMediaFile.FilePath);

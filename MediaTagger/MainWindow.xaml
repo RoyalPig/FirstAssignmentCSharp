@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:MediaTagger"
         
         mc:Ignorable="d"
-        Title="Media Tagger" Height="450" Width="800">
+        Title="Media Tagger" Height="500" Width="800">
+    <!--Converter for bool to visablity for the edit tags and style for the side toolbar-->
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <Style x:Key="ToolBarButtonStyle" TargetType="{x:Type Button}">
@@ -15,7 +16,7 @@
             <Setter Property="Margin" Value="5"/>
         </Style>
     </Window.Resources>
-    
+    <!--Bindings for the commands-->
     <Window.CommandBindings>
         <CommandBinding Command="local:MediaCommands.Play" 
                     CanExecute="Play_CanExecute" 
@@ -33,12 +34,12 @@
                     CanExecute="Open_CanExecute" 
                     Executed="Open_Executed"/>
     </Window.CommandBindings>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <!--Menu for the menu buttons on top-->
         <Menu Grid.Column="1">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open MP3" Click="OpenFile_Click"/>
@@ -55,6 +56,7 @@
                 <MenuItem Header="_Stop" Command="local:MediaCommands.Stop"/>
             </MenuItem>
         </Menu>
+        <!--StackPanel for side toolbar buttons-->
         <StackPanel Grid.Column="0" Orientation="Vertical">
             <Button Command="local:MediaCommands.Open" Style="{StaticResource ToolBarButtonStyle}">
                 <Image Source="open_file.png"/>
@@ -72,21 +74,28 @@
                 <Image Source="stop-icon.png"/>
             </Button>
         </StackPanel>
-
+        <!--StackPanel Main display-->
         <StackPanel Grid.Column="1">
             <Image Height="200" Margin="10" x:Name="artworkImage"/>
             <Label Background="#AAFFFFFF" Margin="10" x:Name="titleLabel"/>
             <Label Background="#AAFFFFFF" Margin="10" x:Name="artistLabel"/>
             <Label Background="#AAFFFFFF" Margin="10" x:Name="albumLabel"/>
+            <Label Background="#AAFFFFFF" Margin="10" x:Name="yearLabel"/>
+
             <ProgressBar x:Name="mediaPlaybackProgress" Height="20" Margin="10" Maximum="100"/>
 
         </StackPanel>
         
+        <!--Missing a user control, wouldve used to move the tag editor or sidebar into its own User control-->
+
+        <!--Hiding grid/stackpanel for a edit panel-->
         <Grid Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#AA000000" x:Name="editTagsOverlay">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Background="#FFFFFFFF">
                 <TextBox Margin="5" x:Name="titleTextBox"/>
                 <TextBox Margin="5" x:Name="artistTextBox"/>
                 <TextBox Margin="5" x:Name="albumTextBox"/>
+                <TextBox Margin="5" x:Name="yearTextBox"/>
+
                 <Button x:Name="saveTagChangesButton" Content="Save" Click="SaveTagChanges_Click" Margin="5"/>
                 <Button Content="Cancel" Click="CloseEditOverlay_Click" Margin="5"/>
             </StackPanel>
